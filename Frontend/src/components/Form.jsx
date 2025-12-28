@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const colors = [
   { name: "Blue", value: "bg-blue-500" },
@@ -16,29 +16,60 @@ const Form = () => {
   const [selectedColor, setSelectedColor] = useState(colors[0].value);
   const [allData, setAllData] = useState([]);
 
-  function submitHandler(e) {
+  // 🔹 Fetch users from backend on page load
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const res = await fetch("http://localhost:8000/user");
+        const data = await res.json();
+        setAllData(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    }
+
+    fetchUsers();
+  }, []);
+
+  // 🔹 Submit form
+  async function submitHandler(e) {
     e.preventDefault();
 
     const newUser = {
       name: userName,
       email: userEmail,
       age: userAge,
-      mobile: userMobile,
+      mobile_no: userMobile,
       color: selectedColor,
     };
 
-    setAllData([...allData, newUser]);
+    try {
+      const response = await fetch("http://localhost:8000/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
 
-    setUserName("");
-    setUserEmail("");
-    setUserAge("");
-    setUserMobile("");
-    setSelectedColor(colors[0].value);
+      const savedUser = await response.json();
+
+      // Update UI with saved DB user
+      setAllData((prev) => [...prev, savedUser]);
+
+      // Reset form
+      setUserName("");
+      setUserEmail("");
+      setUserAge("");
+      setUserMobile("");
+      setSelectedColor(colors[0].value);
+    } catch (error) {
+      console.error("Error saving user:", error);
+    }
   }
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col items-center py-10 px-4">
-      
       {/* Form Section */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
@@ -47,7 +78,9 @@ const Form = () => {
 
         <form
           className="flex flex-col gap-4 text-gray-800"
-          onSubmit={submitHandler}
+          onSubmit={(e)=>{
+            submitHandler(e)
+          }}
         >
           <input
             type="text"
@@ -117,9 +150,9 @@ const Form = () => {
 
       {/* Cards Section */}
       <div className="w-full max-w-5xl mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {allData.map((user, index) => (
+        {allData.map((user) => (
           <div
-            key={index}
+            key={user._id}
             className="bg-white rounded-xl shadow-md overflow-hidden"
           >
             <div className={`${user.color} h-2`} />
@@ -134,7 +167,7 @@ const Form = () => {
               </p>
 
               <p className="text-sm text-gray-500 mt-1">
-                📱 {user.mobile}
+                📱 {user.mobile_no}
               </p>
 
               <p className="text-sm text-gray-500 mt-1">
