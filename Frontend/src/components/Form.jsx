@@ -16,20 +16,20 @@ const Form = () => {
   const [selectedColor, setSelectedColor] = useState(colors[0].value);
   const [allData, setAllData] = useState([]);
 
-  // 🔹 Fetch users from backend on page load
+  // 🔹 Fetch users on page load
   useEffect(() => {
-    async function fetchUsers() {
+    async function fetchUser() {
       try {
         const res = await fetch("http://localhost:8000/user");
-        const data = await res.json();
-        setAllData(data);
+        const data = await res.json(); // ✅ FIXED
+        setAllData(data);              // ✅ ARRAY STORED
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.log("fetch error:", error);
       }
     }
 
-    fetchUsers();
-  }, []);
+    fetchUser(); // ✅ FUNCTION CALLED
+  }, []);        // ✅ RUNS ONLY ONCE
 
   // 🔹 Submit form
   async function submitHandler(e) {
@@ -54,50 +54,46 @@ const Form = () => {
 
       const savedUser = await response.json();
 
-      // Update UI with saved DB user
+      // ✅ Update UI immediately
       setAllData((prev) => [...prev, savedUser]);
 
-      // Reset form
+      // ✅ Reset form
       setUserName("");
       setUserEmail("");
       setUserAge("");
       setUserMobile("");
       setSelectedColor(colors[0].value);
     } catch (error) {
-      console.error("Error saving user:", error);
+      console.error("save error:", error);
     }
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col items-center py-10 px-4">
-      {/* Form Section */}
+    <div className="min-h-screen bg-slate-100  text-slate-800 flex flex-col items-center py-10 px-4">
+      
+      {/* Form */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+        <h2 className="text-2xl font-semibold text-center mb-4">
           Phone Diary
         </h2>
 
-        <form
-          className="flex flex-col gap-4 text-gray-800"
-          onSubmit={(e)=>{
-            submitHandler(e)
-          }}
-        >
+        <form className="flex flex-col gap-4" onSubmit={submitHandler}>
           <input
             type="text"
             placeholder="Full Name"
             required
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
-            className="px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400"
+            className="px-4 py-2 border rounded-lg"
           />
 
           <input
             type="email"
-            placeholder="Email Address"
+            placeholder="Email"
             required
             value={userEmail}
             onChange={(e) => setUserEmail(e.target.value)}
-            className="px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400"
+            className="px-4 py-2 border rounded-lg"
           />
 
           <input
@@ -106,7 +102,7 @@ const Form = () => {
             required
             value={userMobile}
             onChange={(e) => setUserMobile(e.target.value)}
-            className="px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400"
+            className="px-4 py-2 border rounded-lg"
           />
 
           <input
@@ -115,14 +111,12 @@ const Form = () => {
             required
             value={userAge}
             onChange={(e) => setUserAge(e.target.value)}
-            className="px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400"
+            className="px-4 py-2 border rounded-lg"
           />
 
-          {/* Color Selector */}
+          {/* Color Picker */}
           <div>
-            <p className="text-sm font-medium text-gray-600 mb-2">
-              Select Card Color
-            </p>
+            <p className="text-sm mb-2">Select Card Color</p>
             <div className="flex gap-2">
               {colors.map((c) => (
                 <button
@@ -141,38 +135,27 @@ const Form = () => {
 
           <button
             type="submit"
-            className="mt-2 bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-800 transition"
+            className="bg-gray-900 text-white py-2 rounded-lg"
           >
             Add User
           </button>
         </form>
       </div>
 
-      {/* Cards Section */}
+      {/* User Cards */}
       <div className="w-full max-w-5xl mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {allData.map((user) => (
           <div
             key={user._id}
-            className="bg-white rounded-xl shadow-md overflow-hidden"
+            className="bg-white rounded-xl text-slate-800 shadow-md overflow-hidden"
           >
             <div className={`${user.color} h-2`} />
 
             <div className="p-5">
-              <h3 className="text-lg font-semibold text-gray-800">
-                {user.name}
-              </h3>
-
-              <p className="text-sm text-gray-500 mt-1">
-                📧 {user.email}
-              </p>
-
-              <p className="text-sm text-gray-500 mt-1">
-                📱 {user.mobile_no}
-              </p>
-
-              <p className="text-sm text-gray-500 mt-1">
-                🎂 Age: {user.age}
-              </p>
+              <h3 className="font-semibold">{user.name}</h3>
+              <p className="text-sm">📧 {user.email}</p>
+              <p className="text-sm">📱 {user.mobile_no}</p>
+              <p className="text-sm">🎂 Age: {user.age}</p>
             </div>
           </div>
         ))}
