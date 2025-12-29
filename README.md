@@ -3,6 +3,10 @@
 A simple, clean, and modern **Phone Diary** application built using the **MERN stack**.  
 This app allows users to store and view contact details with a beautiful, card-based UI.
 
+
+**Still major part of app is still pending like id making **
+problaly i will like to use the clerk for the authentification and control usesd 
+
 ---
 
 ## 🚨 Important Notice (Open Source)
