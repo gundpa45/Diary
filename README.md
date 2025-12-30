@@ -172,11 +172,7 @@ If you like this project:
 
 
 ---
-```
-If you want next, I can:
-- ✅ Add **GitHub badges**
-- ✅ Make it **portfolio-ready**
-- ✅ Create **CONTRIBUTING.md**
+
 - ✅ Add **LICENSE**
 
 Just tell me 👍
